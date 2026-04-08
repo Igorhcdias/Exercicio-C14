@@ -1,0 +1,88 @@
+name: CI/CD Pipeline App Tarefas
+
+# Define quando o robô vai trabalhar (Sempre que houver um 'push' na branch main)
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # --- JOB 1: TESTES (Roda em paralelo com o Build) ---
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+      
+      - name: Instalar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Instalar Dependências
+        run: npm install
+        
+      - name: Rodar Testes Unitários e gerar relatório
+        # roda o Jest e pede para ele salvar um arquivo JSON com os resultados
+        run: npm test -- --json --outputFile=test-report.json
+        
+      - name: Salvar Relatório como Artefato
+        uses: actions/upload-artifact@v4
+        if: always() # Salva o relatório mesmo se algum teste falhar
+        with:
+          name: relatorio-de-testes
+          path: test-report.json
+
+  # --- JOB 2: BUILD / EMPACOTAMENTO (Roda em paralelo com os Testes) ---
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código do repositório
+        uses: actions/checkout@v4
+        
+      - name: Empacotar o Projeto (Build)
+        # O Ubuntu do GitHub Actions já tem o 'zip' instalado. Vamos zipar o backend.
+        run: zip -r pacote-deploy.zip backend/ package.json
+        
+      - name: Salvar Pacote (Build) como Artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: pacote-aplicacao
+          path: pacote-deploy.zip
+
+  # --- JOB 3: DEPLOY ---
+  deploy:
+    needs: [test, build] # Só roda DEPOIS do sucesso do teste e build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Acionar Deploy no Render
+        # Aqui o GitHub usará a Secret que vamos criar no site depois para avisar o Render
+        run: |
+          if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
+            echo "A URL do Render ainda não foi configurada nas Secrets. Pulando o deploy automático."
+          else
+            echo "Enviando comando para o Render atualizar a API..."
+            curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
+          fi
+
+  # --- JOB 4: NOTIFICAÇÃO ---
+  notify:
+    needs: [test, build, deploy]
+    if: always() # Regra: roda no final, independentemente de sucesso ou falha
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o código para acessar o script
+        uses: actions/checkout@v4
+        
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Executar Script de Notificação
+        # Injetamos a Secret e o Status na variável de ambiente do arquivo
+        env:
+          EMAIL_DESTINO: ${{ secrets.EMAIL }}
+          STATUS_PIPELINE: ${{ job.status }}
+        run: node script-notificacao.js

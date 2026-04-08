@@ -1,0 +1,14 @@
+# Dependências do Node.js
+node_modules/
+
+# Arquivos de log (registros de erro que não precisam ir pro GitHub)
+logs
+*.log
+npm-debug.log*
+
+# Arquivos de variáveis de ambiente (onde guardamos senhas e configurações secretas)
+.env
+
+# Arquivos de sistema gerados automaticamente pelo Windows/Mac
+.DS_Store
+Thumbs.db
