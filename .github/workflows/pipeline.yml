@@ -4,6 +4,8 @@ name: CI/CD Pipeline App Tarefas
 on:
   push:
     branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   # --- JOB 1: TESTES (Roda em paralelo com o Build) ---
