@@ -1,7 +1,17 @@
 class Task {
     constructor(titulo, descricao, dataprevista, dataentrega, prioridade, complexidade, status, responsavel) {
-        if (!titulo) {
+        if (!titulo || titulo.trim() === '') {
             throw new Error("O título é obrigatório.");
+        }
+        if (prioridade !== 'Baixa' && prioridade !== 'Média' && prioridade !== 'Alta') {
+            throw new Error('Prioridade inválida. Escolha entre Baixa, Média ou Alta.');
+        }
+        if (!descricao || descricao.trim() === '') {
+            throw new Error('A descrição da tarefa não pode ser vazia.');
+        }
+        const statusPermitidos = ['A Fazer', 'Em Andamento', 'Concluído'];
+        if (!statusPermitidos.includes(status)) {
+            throw new Error('Status inválido. Escolha entre A Fazer, Em Andamento ou Concluído.');
         }
 
         this.titulo = titulo;
