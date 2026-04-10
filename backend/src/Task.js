@@ -43,19 +43,25 @@ class Task {
 
     
     estaAtrasada(dataAtualStr) {
-        if (this.status === 'Concluído') {
-            return false;
-        }
-
-        if (!dataAtualStr || isNaN(Date.parse(dataAtualStr))) {
-            throw new Error('Data atual inválida para verificação.');
-        }
-
-        const dataAtual = new Date(dataAtualStr);
-        const dataPrevista = new Date(this.dataprevista);
-
-        return dataAtual > dataPrevista;
+    if (this.status === 'Concluído') {
+        return false;
     }
+
+    const formatoValido = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!dataAtualStr || !formatoValido.test(dataAtualStr)) {
+        throw new Error('Data atual inválida para verificação.');
+    }
+
+    const dataTestada = new Date(dataAtualStr);
+
+    if (isNaN(dataTestada.getTime())) {
+        throw new Error('Data atual inválida para verificação.');
+    }
+
+    const dataPrevista = new Date(this.dataprevista);
+    return dataTestada > dataPrevista;
+}
 }
 
 module.exports = Task;
