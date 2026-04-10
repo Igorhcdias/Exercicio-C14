@@ -1,10 +1,12 @@
 const express = require('express');
-const TaskManager = require('./TaskManager'); // ou o nome exato do seu arquivo
+const TaskManager = require('./TaskManager'); 
 const Task = require('./Task');
+const cors = require('cors');
+
 
 const app = express();
-// Isso permite que nossa API entenda dados no formato JSON (que o front-end vai enviar)
 app.use(express.json());
+app.use(cors());
 
 // Criamos o nosso "quadro" de tarefas
 const gerenciador = new TaskManager();
