@@ -47,9 +47,15 @@ class Task {
         return false;
     }
 
+    const formatoValido = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!dataAtualStr || !formatoValido.test(dataAtualStr)) {
+        throw new Error('Data atual inválida para verificação.');
+    }
+
     const dataTestada = new Date(dataAtualStr);
 
-    if (!dataAtualStr || isNaN(dataTestada.getTime())) {
+    if (isNaN(dataTestada.getTime())) {
         throw new Error('Data atual inválida para verificação.');
     }
 
