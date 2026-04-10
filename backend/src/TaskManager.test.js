@@ -58,6 +58,35 @@ describe('Testes da classe TaskManager', () => {
         expect(tarefa.estaAtrasada('2026-04-10')).toBe(false);
     });
 
+    test('Deve atualizar o status da tarefa com sucesso', () => {
+        const tarefa = new Task('Design', 'Criar telas', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Lara');
+        
+        // CORREÇÃO: Usando a palavra exata que está na sua regra do statusPermitidos
+        tarefa.atualizarStatus('Em Andamento'); 
+        
+        // Verificamos se a mudança foi salva no objeto
+        expect(tarefa.status).toBe('Em Andamento');
+    });
+
+    test('Deve atualizar o responsável pela tarefa com sucesso', () => {
+        const tarefa = new Task('Deploy', 'Subir no Render', '2026-04-10', '', 'Alta', 'Alta', 'A Fazer', 'Igor');
+        
+        // Trocando o responsável
+        tarefa.atualizarResponsavel('Lara');
+        
+        // Verificando se a alteração funcionou
+        expect(tarefa.responsavel).toBe('Lara');
+    });
+
+    test('Deve criar uma tarefa e atribuir propriedades básicas corretamente', () => {
+        const tarefa = new Task('Teste Completo', 'Validar campos', '2026-05-01', '2026-05-05', 'Baixa', 'Média', 'Concluído', 'Igor');
+        
+        // Garantindo que o construtor repassou os valores certos para as variáveis internas
+        expect(tarefa.titulo).toBe('Teste Completo');
+        expect(tarefa.prioridade).toBe('Baixa');
+        expect(tarefa.status).toBe('Concluído');
+    });
+
     // --- FLUXOS INOPORTUNOS (EXCEÇÃO) ---
 
     test('Deve lançar erro ao tentar adicionar algo que não é uma Task (Fluxo Inoportuno)', () => {
@@ -85,6 +114,13 @@ describe('Testes da classe TaskManager', () => {
         expect(() => { tarefa.estaAtrasada() }).toThrow('Data atual inválida para verificação.');
     });
 
+    test('Deve lançar erro ao verificar atraso passando uma data em formato inválido', () => {
+        const tarefa = new Task('Revisão', 'Revisar PR', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Igor');
+        
+        // Chamando o método com uma string que não é uma data
+        expect(() => { tarefa.estaAtrasada('data-maluca-123') }).toThrow('Data atual inválida para verificação.');
+    });
+
     test('Deve lançar erro ao tentar atualizar o título para um valor vazio', () => {
     // Criamos a tarefa normalmente
     const tarefa = new Task('Revisão', 'Revisar PR', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Lara');
@@ -94,4 +130,28 @@ describe('Testes da classe TaskManager', () => {
         tarefa.atualizarTitulo(''); 
     }).toThrow("O título não pode ser vazio.");
 });
+
+test('Deve lançar erro ao tentar criar tarefa com prioridade inválida', () => {
+        // Tentando criar com prioridade "Urgente" (que não existe na regra)
+        expect(() => {
+            new Task('Bug em Produção', 'Consertar banco', '2026-04-10', '', 'Urgente', 'Alta', 'A Fazer', 'Igor');
+        }).toThrow('Prioridade inválida. Escolha entre Baixa, Média ou Alta.');
+    });
+
+    test('Deve lançar erro ao tentar criar tarefa com status inicial inválido', () => {
+        // Tentando criar com status "Pausado"
+        expect(() => {
+            new Task('Feature Nova', 'Implementar tela', '2026-04-10', '', 'Alta', 'Alta', 'Pausado', 'Igor');
+        }).toThrow('Status inválido. Escolha entre A Fazer, Em Andamento ou Concluído.');
+    });
+
+    test('Deve lançar erro ao tentar atualizar o status para um valor não permitido', () => {
+        const tarefa = new Task('Revisão', 'Revisar PR', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Lara');
+        
+        // Usando o método de atualizar com um status maluco
+        expect(() => {
+            tarefa.atualizarStatus('Arquivado');
+        }).toThrow("Status inválido.");
+    });
+
 });
