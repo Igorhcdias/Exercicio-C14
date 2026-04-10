@@ -30,6 +30,34 @@ describe('Testes da classe TaskManager', () => {
         expect(lista[0].titulo).toBe('Estudar CI/CD'); // a ideia é o titulo ser igual ao que criamos
     });
 
+    test('Deve retornar true se a data atual for maior que a data prevista', () => {
+        // Tarefa com previsão para o dia 10 de abril
+        const tarefa = new Task('Entregar Código', 'Fazer o push da feature', '2026-04-10', '', 'Alta', 'Alta', 'Em Andamento', 'Igor');
+        
+        // Simulando que hoje é dia 12 de abril (passou do prazo)
+        expect(tarefa.estaAtrasada('2026-04-12')).toBe(true);
+
+    });
+
+    test('Deve retornar false se a data atual for menor ou igual à data prevista', () => {
+        // Tarefa com previsão para o dia 20 de abril
+        const tarefa = new Task('Apresentar Pitch', 'Slides para o evento no Inatel', '2026-04-20', '', 'Média', 'Baixa', 'A Fazer', 'Igor');
+        
+        // Simulando que hoje é dia 15 de abril (ainda tem tempo)
+        expect(tarefa.estaAtrasada('2026-04-15')).toBe(false); 
+        
+        // Simulando que hoje é o último dia do prazo
+        expect(tarefa.estaAtrasada('2026-04-20')).toBe(false); 
+    });
+
+    test('Deve retornar false se a tarefa estiver atrasada, mas já foi com status Concluído', () => {
+        // Tarefa que era para o dia 05, mas o status está como 'Concluído'
+        const tarefa = new Task('Checklist JS', 'Terminar script', '2026-04-05', '2026-04-06', 'Alta', 'Alta', 'Concluído', 'Igor');
+        
+        // Simulando o dia 10 (passou do prazo original, mas já foi entregue)
+        expect(tarefa.estaAtrasada('2026-04-10')).toBe(false);
+    });
+
     // --- FLUXOS INOPORTUNOS (EXCEÇÃO) ---
 
     test('Deve lançar erro ao tentar adicionar algo que não é uma Task (Fluxo Inoportuno)', () => {
@@ -48,6 +76,20 @@ describe('Testes da classe TaskManager', () => {
         expect(() => {
             gerenciador.deletarTask('Tarefa Fantasma');
         }).toThrow("Tarefa não encontrada para deletar.");
+    });
+
+    test('Deve lançar erro ao verificar atraso sem passar a data atual', () => {
+        const tarefa = new Task('Bugfix', 'Corrigir erro', '2026-04-10', '', 'Baixa', 'Baixa', 'A Fazer', 'Igor');
+        
+        // Chamando o método vazio
+        expect(() => { tarefa.estaAtrasada() }).toThrow('Data atual inválida para verificação.');
+    });
+
+    test('Deve lançar erro ao verificar atraso passando uma data em formato inválido', () => {
+        const tarefa = new Task('Revisão', 'Revisar PR', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Igor');
+        
+        // Chamando o método com uma string que não é uma data
+        expect(() => { tarefa.estaAtrasada('data-maluca-123') }).toThrow('Data atual inválida para verificação.');
     });
 
 });

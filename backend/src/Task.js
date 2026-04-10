@@ -30,7 +30,7 @@ class Task {
     }
 
     atualizarStatus(novoStatus) {
-        const statusPermitidos = ['A Fazer', 'Em Progresso', 'Concluído'];
+        const statusPermitidos = ['A Fazer', 'Em Andamento', 'Concluído'];
         if (!statusPermitidos.includes(novoStatus)) {
             throw new Error("Status inválido.");
         }
@@ -39,6 +39,22 @@ class Task {
 
     atualizarResponsavel(novoResponsavel) {
         this.responsavel = novoResponsavel;
+    }
+
+    
+    estaAtrasada(dataAtualStr) {
+        if (this.status === 'Concluído') {
+            return false;
+        }
+
+        if (!dataAtualStr || isNaN(Date.parse(dataAtualStr))) {
+            throw new Error('Data atual inválida para verificação.');
+        }
+
+        const dataAtual = new Date(dataAtualStr);
+        const dataPrevista = new Date(this.dataprevista);
+
+        return dataAtual > dataPrevista;
     }
 }
 
