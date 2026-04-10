@@ -61,11 +61,11 @@ describe('Testes da classe TaskManager', () => {
     test('Deve atualizar o status da tarefa com sucesso', () => {
         const tarefa = new Task('Design', 'Criar telas', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Lara');
         
-        // Chamamos o método para mudar o status
-        tarefa.atualizarStatus('Em Progresso'); 
+        // CORREÇÃO: Usando a palavra exata que está na sua regra do statusPermitidos
+        tarefa.atualizarStatus('Em Andamento'); 
         
         // Verificamos se a mudança foi salva no objeto
-        expect(tarefa.status).toBe('Em Progresso');
+        expect(tarefa.status).toBe('Em Andamento');
     });
 
     test('Deve atualizar o responsável pela tarefa com sucesso', () => {
