@@ -85,6 +85,13 @@ describe('Testes da classe TaskManager', () => {
         expect(() => { tarefa.estaAtrasada() }).toThrow('Data atual inválida para verificação.');
     });
 
+    test('Deve lançar erro ao verificar atraso passando uma data em formato inválido', () => {
+        const tarefa = new Task('Revisão', 'Revisar PR', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Igor');
+        
+        // Chamando o método com uma string que não é uma data
+        expect(() => { tarefa.estaAtrasada('data-maluca-123') }).toThrow('Data atual inválida para verificação.');
+    });
+
     test('Deve lançar erro ao tentar atualizar o título para um valor vazio', () => {
     // Criamos a tarefa normalmente
     const tarefa = new Task('Revisão', 'Revisar PR', '2026-04-10', '', 'Média', 'Média', 'A Fazer', 'Lara');
@@ -94,4 +101,5 @@ describe('Testes da classe TaskManager', () => {
         tarefa.atualizarTitulo(''); 
     }).toThrow("O título não pode ser vazio.");
 });
+
 });
