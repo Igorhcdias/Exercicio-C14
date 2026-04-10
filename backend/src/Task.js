@@ -47,14 +47,14 @@ class Task {
             return false;
         }
 
-        if (!dataAtualStr || isNaN(Date.parse(dataAtualStr))) {
+        const dataTestada = new Date(dataAtualStr);
+
+        if (!dataAtualStr || dataTestada.toString() === 'Invalid Date') {
             throw new Error('Data atual inválida para verificação.');
         }
 
-        const dataAtual = new Date(dataAtualStr);
         const dataPrevista = new Date(this.dataprevista);
-
-        return dataAtual > dataPrevista;
+        return dataTestada > dataPrevista;
     }
 }
 
