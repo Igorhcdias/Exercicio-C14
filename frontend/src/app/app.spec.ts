@@ -116,7 +116,7 @@ describe('Testes do Componente Principal (Front-end)', () => {
         { status: 400, statusText: 'Bad Request' }        // Cabeçalhos HTTP
       );
 
-      // Verificação: O front-end tem que ter pego a mensagem do back-end e mostrado na tela
+      // Verificação: O front-end tem que ter pego a mensagem do back-end 
       expect(component.mensagemErro).toContain('Erro do servidor: Data inválida ou servidor fora do ar');
       expect(component.tarefas.length).toBe(0); // Garante que a tarefa não entrou na tela
     });
