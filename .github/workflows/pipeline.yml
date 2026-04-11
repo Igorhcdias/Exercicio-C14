@@ -86,8 +86,10 @@ jobs:
         with:
           node-version: '22'
           
+      - name: Instalar o pacote do Nodemailer
+        run: npm install nodemailer
+          
       - name: Executar Script de Notificação
-        # Injetamos as Secrets na variável de ambiente do arquivo
         env:
           EMAIL_REMETENTE: ${{ secrets.EMAIL_REMETENTE }}
           SENHA_REMETENTE: ${{ secrets.SENHA_REMETENTE }}
