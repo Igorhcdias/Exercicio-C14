@@ -33,7 +33,7 @@ jobs:
       - name: Rodar Testes do Frontend
         run: |
           cd frontend
-          npx ng test --watch=false --browsers=ChromeHeadless --no-progress
+          npm test -- --run --provider=none
         
       - name: Salvar Relatório como Artefato
         uses: actions/upload-artifact@v4
