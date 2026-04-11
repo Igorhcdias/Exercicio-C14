@@ -30,6 +30,37 @@ describe('Testes da classe TaskManager', () => {
         expect(lista[0].titulo).toBe('Estudar CI/CD'); // a ideia é o titulo ser igual ao que criamos
     });
 
+    test('Deve deletar uma tarefa existente com sucesso (Fluxo Normal)', () => {
+        // Preparação: Cria e adiciona uma tarefa
+        const tarefaParaDeletar = new Task('Apresentação', 'Fazer slides', '2026-05-01', '2026-05-02', 'Média', 'Baixa', 'A Fazer', 'Fernando');
+        gerenciador.adicionarTask(tarefaParaDeletar);
+        
+        // Verifica se a tarefa realmente entrou na lista (tamanho deve ser 1)
+        expect(gerenciador.listarTasks().length).toBe(1);
+
+        // Ação: Deleta a tarefa passando o título dela (assim como no seu teste de erro)
+        gerenciador.deletarTask('Apresentação');
+
+        // Verificação: A lista deve voltar a ficar completamente vazia (tamanho 0)
+        expect(gerenciador.listarTasks().length).toBe(0);
+    });
+
+    test('Deve listar múltiplas tarefas corretamente (Fluxo Normal)', () => {
+        // Preparação: Cria duas tarefas diferentes
+        const tarefa1 = new Task('Apresentação', 'Fazer slides', '2026-05-01', '2026-05-02', 'Média', 'Baixa', 'A Fazer', 'Lara');
+        const tarefa2 = new Task('Estudar Código', 'Revisar PRs', '2026-05-03', '2026-05-04', 'Alta', 'Alta', 'A Fazer', 'Igor');
+        
+        // Ação: Adiciona as duas no gerenciador
+        gerenciador.adicionarTask(tarefa1);
+        gerenciador.adicionarTask(tarefa2);
+
+        // Verificação: A lista deve conter exatamente as 2 tarefas, na ordem em que foram colocadas
+        const lista = gerenciador.listarTasks();
+        expect(lista.length).toBe(2);
+        expect(lista[0].titulo).toBe('Apresentação');
+        expect(lista[1].titulo).toBe('Estudar Código');
+    });
+
     test('Deve retornar true se a data atual for maior que a data prevista', () => {
         // Tarefa com previsão para o dia 10 de abril
         const tarefa = new Task('Entregar Código', 'Fazer o push da feature', '2026-04-10', '', 'Alta', 'Alta', 'Em Andamento', 'Igor');

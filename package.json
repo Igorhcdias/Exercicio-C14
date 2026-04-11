@@ -12,16 +12,17 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.6",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "nodemailer": "^8.0.5"
   },
   "devDependencies": {
     "jest": "^30.3.0"
   },
   "jest": {
-  "testEnvironment": "node",
-  "testPathIgnorePatterns": [
-    "/node_modules/",
-    "/frontend/" 
-  ]
-}
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/frontend/"
+    ]
+  }
 }

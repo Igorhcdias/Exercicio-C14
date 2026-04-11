@@ -87,8 +87,10 @@ jobs:
           node-version: '22'
           
       - name: Executar Script de Notificação
+        # Injetamos as Secrets na variável de ambiente do arquivo
         env:
+          EMAIL_REMETENTE: ${{ secrets.EMAIL_REMETENTE }}
+          SENHA_REMETENTE: ${{ secrets.SENHA_REMETENTE }}
           EMAIL_DESTINO: ${{ secrets.EMAIL }}
-          # Ajuste para pegar o status do job de teste especificamente
-          STATUS_PIPELINE: ${{ needs.test.result }} 
+          STATUS_PIPELINE: ${{ job.status }}
         run: node script-notificacao.js
