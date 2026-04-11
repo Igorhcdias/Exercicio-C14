@@ -1,0 +1,64 @@
+<div class="container">
+  <header>
+    <h1>📋 Gestão de Tarefas</h1>
+  </header>
+
+  <main>
+    <section class="form-section">
+      <h3>Adicionar Nova Tarefa</h3>
+      
+      <div class="form-group">
+        <input #tituloInput type="text" placeholder="Título (Obrigatório)">
+        <input #descInput type="text" placeholder="Descrição (Obrigatório)">
+      </div>
+      
+      <div class="form-group">
+        <input #dataInput type="date" title="Data Prevista">
+        <select #prioridadeInput>
+          <option value="Baixa">Prioridade: Baixa</option>
+          <option value="Média" selected>Prioridade: Média</option>
+          <option value="Alta">Prioridade: Alta</option>
+        </select>
+        <input #respInput type="text" placeholder="Nome do Responsável">
+      </div>
+
+      <button class="btn-primary" 
+        (click)="adicionarTarefa(tituloInput.value, descInput.value, dataInput.value, prioridadeInput.value, respInput.value)">
+        ➕ Adicionar à Lista
+      </button>
+
+      <p class="error-msg" *ngIf="mensagemErro">{{ mensagemErro }}</p>
+    </section>
+
+    <section class="list-section">
+      <h3>Suas Tarefas</h3>
+      
+      <div class="task-grid">
+        <div class="task-card" *ngFor="let t of tarefas; let i = index" [ngClass]="{'Concluído': t.status === 'Concluído', 'Em-Andamento': t.status === 'Em Andamento'}">
+          
+          <div class="task-header">
+            <h4>{{ t.titulo }}</h4>
+            <span class="badge">{{ t.prioridade }}</span>
+          </div>
+          
+          <p class="task-desc">{{ t.descricao }}</p>
+          
+          <div class="task-footer">
+            <small>📅 Previsto: {{ t.dataprevista | date:'dd/MM/yyyy' }} | 👤 {{ t.responsavel }}</small>
+            
+            <div class="task-actions">
+              <select #statusSelect (change)="atualizarStatus(i, statusSelect.value)" [value]="t.status">
+                <option value="A Fazer">A Fazer</option>
+                <option value="Em Andamento">Em Andamento</option>
+                <option value="Concluído">Concluído</option>
+              </select>
+              
+              <button class="btn-danger" (click)="deletarTarefa(i, t.titulo)">🗑️ Excluir</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+</div>

@@ -1,14 +1,13 @@
 name: CI/CD Pipeline App Tarefas
 
-# Define quando o robô vai trabalhar (Sempre que houver um 'push' na branch main)
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "joaoPedro" ] 
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  # --- JOB 1: TESTES (Roda em paralelo com o Build) ---
+  # --- JOB 1: TESTES (Ajustado para Front e Back) ---
   test:
     runs-on: ubuntu-latest
     steps:
@@ -18,23 +17,32 @@ jobs:
       - name: Instalar o Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           
-      - name: Instalar Dependências
+      - name: Instalar Dependências da Raiz
         run: npm install
         
-      - name: Rodar Testes Unitários e gerar relatório
-        # roda o Jest e pede para ele salvar um arquivo JSON com os resultados
-        run: npm test -- --json --outputFile=test-report.json
+      - name: Instalar Dependências do Frontend
+        run: |
+          cd frontend
+          npm install
+
+      - name: Rodar Testes do Backend
+        run: npm test -- --json --outputFile=test-report-backend.json
+        
+      - name: Validar Compilação do Frontend
+        run: |
+          cd frontend
+          npx ng build --configuration production
         
       - name: Salvar Relatório como Artefato
         uses: actions/upload-artifact@v4
-        if: always() # Salva o relatório mesmo se algum teste falhar
+        if: always()
         with:
           name: relatorio-de-testes
-          path: test-report.json
+          path: test-report-backend.json
 
-  # --- JOB 2: BUILD / EMPACOTAMENTO (Roda em paralelo com os Testes) ---
+  # --- JOB 2: BUILD / EMPACOTAMENTO (Mantido e ajustado) ---
   build:
     runs-on: ubuntu-latest
     steps:
@@ -42,8 +50,8 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Empacotar o Projeto (Build)
-        # O Ubuntu do GitHub Actions já tem o 'zip' instalado. Vamos zipar o backend.
-        run: zip -r pacote-deploy.zip backend/ package.json
+        # Incluímos a pasta frontend no zip para o deploy ser completo
+        run: zip -r pacote-deploy.zip backend/ frontend/ package.json
         
       - name: Salvar Pacote (Build) como Artefato
         uses: actions/upload-artifact@v4
@@ -51,38 +59,36 @@ jobs:
           name: pacote-aplicacao
           path: pacote-deploy.zip
 
-  # --- JOB 3: DEPLOY ---
+  # --- JOB 3: DEPLOY (Mantido igual) ---
   deploy:
-    needs: [test, build] # Só roda DEPOIS do sucesso do teste e build
+    needs: [test, build] 
     runs-on: ubuntu-latest
     steps:
       - name: Acionar Deploy no Render
-        # Aqui o GitHub usará a Secret que vamos criar no site depois para avisar o Render
         run: |
           if [ -z "${{ secrets.RENDER_DEPLOY_HOOK }}" ]; then
-            echo "A URL do Render ainda não foi configurada nas Secrets. Pulando o deploy automático."
+            echo "A URL do Render ainda não foi configurada. Pulando."
           else
-            echo "Enviando comando para o Render atualizar a API..."
             curl "${{ secrets.RENDER_DEPLOY_HOOK }}"
           fi
 
-  # --- JOB 4: NOTIFICAÇÃO ---
+  # --- JOB 4: NOTIFICAÇÃO (Mantido e corrigido) ---
   notify:
     needs: [test, build, deploy]
-    if: always() # Regra: roda no final, independentemente de sucesso ou falha
+    if: always() 
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar o código para acessar o script
+      - name: Baixar o código
         uses: actions/checkout@v4
         
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
           
       - name: Executar Script de Notificação
-        # Injetamos a Secret e o Status na variável de ambiente do arquivo
         env:
           EMAIL_DESTINO: ${{ secrets.EMAIL }}
-          STATUS_PIPELINE: ${{ job.status }}
+          # Ajuste para pegar o status do job de teste especificamente
+          STATUS_PIPELINE: ${{ needs.test.result }} 
         run: node script-notificacao.js
