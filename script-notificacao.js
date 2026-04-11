@@ -24,7 +24,7 @@ const mailOptions = {
     from: emailRemetente,
     to: emailDestino,
     subject: `[GitHub Actions] Resultado do Pipeline: ${statusPipeline.toUpperCase()}`,
-    text: `Olá!\n\nA execução do seu pipeline de testes e build finalizou com o status: ${statusPipeline.toUpperCase()}.\n\nO pacote foi gerado e o deploy foi processado (se os testes passaram).\n\nParabéns pelo trabalho na disciplina de Engenharia de Software!`
+    text: `Olá!\n\nA execução do seu pipeline de testes e build finalizou com o status: ${statusPipeline.toUpperCase()}.\n\nO pacote foi gerado e o deploy foi processado (se os testes passaram).\n\nObrigado por usar o nosso sistema de CI/CD!`
 };
 
 // Comando para enviar o e-mail
